@@ -98,7 +98,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
       setPhoneNumber("");
       setEmail("");
     } catch (error) {
-      const errorResponse = error.response?.data || error.message;
+      const errorResponse = error.response?.data;
       setErrorMessage(
         errorResponse.detail || "Error updating data. Please try again.",
       );
@@ -134,7 +134,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
       });
       setLabs(responseLabs.data.filter((lab) => lab.department === branch));
     } catch (error) {
-      const errorResponse = error.response?.data || error.message;
+      const errorResponse = error.response?.data;
       setLabErrorMessage(
         errorResponse.detail || "Error adding lab. Please try again.",
       );
@@ -169,7 +169,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
       setLabs(responseLabs.data.filter((lab) => lab.department === branch));
       setSelectedLabs([]);
     } catch (error) {
-      const errorResponse = error.response?.data || error.message;
+      const errorResponse = error.response?.data;
       setErrorMessage(
         errorResponse.detail || "Error deleting labs. Please try again.",
       );
@@ -209,7 +209,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
       setFacilityLocation("");
       setFacilityPictureFile(null);
     } catch (error) {
-      const errorResponse = error.response?.data || error.message;
+      const errorResponse = error.response?.data;
       setErrorMessage(
         errorResponse.detail || "Error adding facility. Please try again.",
       );

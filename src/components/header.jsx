@@ -41,6 +41,11 @@ function Header({ opened, toggleSidebar }) {
 
   const handleRoleChange = async (newRole) => {
     const token = localStorage.getItem("authToken");
+
+    dispatch(setRole(newRole));
+    localStorage.setItem("last_selected_role", newRole);
+    dispatch(setCurrentAccessibleModules());
+
     try {
       const response = await axios.patch(
         updateRoleRoute,
@@ -67,11 +72,15 @@ function Header({ opened, toggleSidebar }) {
         color: "green",
       });
       console.log(response.data.message);
-      dispatch(setRole(newRole));
-      dispatch(setCurrentAccessibleModules());
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error updating last selected role:", error.response.data);
+      console.error("Error updating last selected role:", error?.response?.data || error);
+      notifications.show({
+        title: "Role saved locally",
+        message: "The selected role was applied in the UI, but the server update endpoint is unavailable.",
+        color: "yellow",
+      });
+      navigate("/dashboard");
     }
   };
   const handleLogout = async () => {

@@ -58,7 +58,7 @@ export default function ViewFeedback({ branch }) {
           );
         }, 100);
       } catch (error) {
-        const errorResponse = error.response?.data || error.message;
+          const errorResponse = error.response?.data;
         setErrorMessage(errorResponse.detail || "Error fetching feedback.");
         console.error("Error fetching feedback:", errorResponse);
       } finally {
@@ -141,7 +141,7 @@ export default function ViewFeedback({ branch }) {
             order={1}
             align="center"
             style={{
-              fontWeight: 700,
+              fontWeight: 400,
               fontSize: "32px",
               color: "#2C3E50",
               letterSpacing: "1px",
@@ -172,7 +172,7 @@ export default function ViewFeedback({ branch }) {
               <Group position="center" style={{ marginBottom: "15px" }}>
                 <Text
                   size="lg"
-                  weight={500}
+                  weight={400}
                   align="center"
                   style={{
                     color: "#333",
@@ -224,7 +224,7 @@ export default function ViewFeedback({ branch }) {
             >
               <Stack spacing="sm" align="center">
                 <Text
-                  weight={500}
+                  weight={400}
                   size="md"
                   style={{
                     lineHeight: 1.5,

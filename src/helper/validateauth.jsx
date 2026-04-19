@@ -40,19 +40,23 @@ function ValidateAuth() {
 
       const {
         name,
-        designation_info = [],
+        designation_info,
+        desgination_info,
         accessible_modules = [],
         last_selected_role,
         roll_no,
       } = data;
 
+      const roles = designation_info || desgination_info || [];
+      const storedSelectedRole = localStorage.getItem("last_selected_role");
+
       console.log("User Data:", data);
 
       dispatch(setUserName(name));
       dispatch(setRollNo(roll_no));
-      dispatch(setRoles(designation_info));
+      dispatch(setRoles(roles));
 
-      const selectedRole = last_selected_role || designation_info[0] || null;
+      const selectedRole = storedSelectedRole || last_selected_role || roles[0] || null;
       if (selectedRole) dispatch(setRole(selectedRole));
 
       dispatch(setAccessibleModules(accessible_modules));

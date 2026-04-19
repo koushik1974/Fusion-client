@@ -104,7 +104,7 @@ function Facilities({ branch }) {
                     <Card shadow="md" padding="xl" radius="md" withBorder>
                       <Group mb="md" align="center" spacing="sm">
                         <IconBuilding size={28} />
-                        <Text size="lg" weight={600}>
+                        <Text size="lg" weight={400}>
                           {lab.name}
                         </Text>
                       </Group>
@@ -114,7 +114,7 @@ function Facilities({ branch }) {
                       <Group position="apart" mb="sm">
                         <Group spacing="xs">
                           <IconUsers size={20} />
-                          <Text size="md" weight={500}>
+                          <Text size="md" weight={400}>
                             Capacity:
                           </Text>
                         </Group>
@@ -126,7 +126,7 @@ function Facilities({ branch }) {
                       <Group position="apart">
                         <Group spacing="xs">
                           <IconMapPin size={20} />
-                          <Text size="md" weight={500}>
+                          <Text size="md" weight={400}>
                             Location:
                           </Text>
                         </Group>

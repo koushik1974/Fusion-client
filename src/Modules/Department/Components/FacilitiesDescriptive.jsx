@@ -134,7 +134,7 @@ export default function FacilitiesDescriptive({ branch }) {
             marginBottom: "24px",
             fontSize: "24px",
             color: "#333",
-            fontWeight: "700",
+            fontWeight: "400",
           }}
         >
           Department Facilities
@@ -206,7 +206,7 @@ export default function FacilitiesDescriptive({ branch }) {
                   margin: "0 0 8px 0",
                   fontSize: "18px",
                   color: "#222",
-                  fontWeight: "600",
+                  fontWeight: "400",
                   lineHeight: "1.4",
                 }}
               >

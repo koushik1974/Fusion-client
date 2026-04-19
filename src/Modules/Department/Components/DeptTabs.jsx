@@ -3,10 +3,10 @@ import { Button, Flex, Tabs, Text, Title, Box, Paper } from "@mantine/core";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import dashboardClasses from "../../Dashboard/Dashboard.module.css";
 
 // Lazy load components
 const AboutUs = lazy(() => import("./AboutUs"));
-const Facilities = lazy(() => import("./Facilities"));
 const Faculty = lazy(() => import("./Faculty"));
 const Studentcat = lazy(() => import("./Studentcat"));
 const Announcements = lazy(() => import("./Announcements"));
@@ -37,11 +37,10 @@ function DeptTabs({ branch }) {
 
   const tabItems = [
     { title: "About Us" },
-    { title: "Faculties", id: "2" },
+    { title: "Faculty", id: "2" },
     { title: "Students", id: "3", department: branch },
     { title: "Announcements", id: "4", department: branch },
     { title: "Alumni" },
-    { title: "Facilities" },
   ];
 
   if (isFeedbackAvailable) {
@@ -62,20 +61,19 @@ function DeptTabs({ branch }) {
       1: <Faculty branch={branch} />,
       2: <Studentcat branch={branch} />,
       3: <Announcements branch={branch} />,
-      4: <Alumnicat />,
-      5: <Facilities branch={branch} />,
-      6: isFeedbackAvailable ? <ViewFeedback branch={branch} /> : null,
+      4: <Alumnicat branch={branch} />,
+      5: isFeedbackAvailable ? <ViewFeedback branch={branch} /> : null,
     };
     return components[activeTab] || null;
   };
 
   return (
-    <Box px="md" py="xl">
-      <Title order={2} mb="lg" fw={600} c="blue.7">
+    <Box px="md" py="md">
+      <Title order={2} mb="md" fw={400} c="blue.7">
         Welcome to {branch} Department
       </Title>
 
-      <Flex align="center" gap="xs" mb="md">
+      <Flex align="center" gap="xs" mb="lg">
         <Button
           onClick={() => handleTabChange("prev")}
           variant="light"
@@ -89,24 +87,34 @@ function DeptTabs({ branch }) {
           style={{
             display: "flex",
             flexWrap: "nowrap",
-            overflow: "hidden", // Disable scroll and prevent overflow
+            overflowX: "auto",
+            overflowY: "hidden",
+            scrollBehavior: "smooth",
+            gap: "8px",
           }}
         >
           <Tabs
             value={activeTab}
             onChange={setActiveTab}
             color="blue"
-            variant="pills"
             radius="lg"
             keepMounted={false}
             style={{ whiteSpace: "nowrap" }}
           >
-            <Tabs.List style={{ flexWrap: "nowrap" }}>
+            <Tabs.List
+              className={dashboardClasses.tabsList}
+              style={{ flexWrap: "nowrap", gap: "8px", padding: "0 4px" }}
+            >
               {tabItems.map((item, index) => (
                 <Tabs.Tab
                   value={String(index)}
                   key={index}
-                  style={{ marginRight: 12, fontWeight: 600 }}
+                  className={
+                    activeTab === String(index)
+                      ? dashboardClasses.fusionActiveRecentTab
+                      : ""
+                  }
+                  style={{ marginRight: 8, fontWeight: 400 }}
                 >
                   {item.title}
                 </Tabs.Tab>
@@ -125,7 +133,7 @@ function DeptTabs({ branch }) {
         </Button>
       </Flex>
 
-      <Paper withBorder shadow="sm" radius="md" p="md" w="100%">
+      <Paper withBorder shadow="sm" radius="md" p="md" w="100%" mt="xs">
         <Suspense fallback={<Text c="dimmed">Loading content...</Text>}>
           {renderTabContent()}
         </Suspense>

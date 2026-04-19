@@ -9,6 +9,7 @@ import {
   Loader,
 } from "@mantine/core";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import classes from "../../Dashboard/Dashboard.module.css";
 
 const Announcements = lazy(() => import("./Announcements"));
 
@@ -35,13 +36,13 @@ export default function BrowseAnnouncements() {
   );
 
   return (
-    <Container size="xl" py="lg">
+    <Container size="xl" py="sm">
       <Grid>
         <Grid.Col span={12}>
           <Group
             position="apart"
             align="center"
-            mb="lg"
+            mb="md"
             style={{ flexWrap: "nowrap", width: "100%" }}
           >
             <Button
@@ -49,6 +50,7 @@ export default function BrowseAnnouncements() {
               variant="subtle"
               p={0}
               mr="xs"
+              className={classes.navArrowButton}
             >
               <CaretLeft size={24} />
             </Button>
@@ -66,9 +68,15 @@ export default function BrowseAnnouncements() {
                 {tabItems.map((item, index) => (
                   <Button
                     key={index}
-                    variant={activeTab === String(index) ? "filled" : "light"}
+                    variant="light"
+                    className={
+                      activeTab === String(index)
+                        ? classes.fusionActiveRecentTab
+                        : classes.tabActionButton
+                    }
                     color="blue"
                     onClick={() => setActiveTab(String(index))}
+                    style={{ fontWeight: 400 }}
                   >
                     {item}
                   </Button>
@@ -81,12 +89,17 @@ export default function BrowseAnnouncements() {
               variant="subtle"
               p={0}
               ml="xs"
+              className={classes.navArrowButton}
             >
               <CaretRight size={24} />
             </Button>
           </Group>
         </Grid.Col>
-        <Grid.Col span={12}>{renderTabContent()}</Grid.Col>
+        <Grid.Col span={12}>
+          <Paper withBorder p="lg" radius="md" shadow="sm" mt="sm" className={classes.tabPanelPaper}>
+            {renderTabContent()}
+          </Paper>
+        </Grid.Col>
       </Grid>
     </Container>
   );

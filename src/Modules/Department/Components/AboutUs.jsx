@@ -1,5 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Container, Paper, Title, Text, Button, Stack, Group, Badge, Box, ThemeIcon, Grid } from "@mantine/core";
+import { Eye, Target, Wrench, BookOpen } from "@phosphor-icons/react";
 
 export default function AboutUs({ branch }) {
   // A dictionary object to store content for each branch
@@ -82,42 +84,87 @@ export default function AboutUs({ branch }) {
   };
 
   return (
-    <div>
-      <h2>{deptInfo.title}</h2>
-      <p>
-        <strong>About the Department:</strong> {deptInfo.about}
-      </p>
-      {/* {deptInfo.facilities && (
-        <p>
-          <strong>Facilities:</strong> {deptInfo.facilities}
-        </p>
-      )} */}
-      {deptInfo.vision && (
-        <p>
-          <strong>Vision:</strong> {deptInfo.vision}
-        </p>
-      )}
-      {deptInfo.timetable && (
-        <p>
-          <strong>Timetable:</strong>{" "}
-          <a
-            href={deptInfo.timetable}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              padding: "4px 8px",
-              backgroundColor: "#15ABFF",
-              color: "#fff",
-              textDecoration: "none",
-              borderRadius: "4px",
-              fontWeight: "bold",
-            }}
-          >
-            View
-          </a>
-        </p>
-      )}
-    </div>
+    <Container size="lg" py="xl">
+      <Stack spacing="lg">
+        {/* Header Section */}
+        <Box>
+          <Group spacing="sm" mb="md">
+            <Badge size="lg" variant="light" color="blue">{branch}</Badge>
+          </Group>
+          <Title order={1} size="h2" fw={700} mb="md">
+            {deptInfo.title}
+          </Title>
+        </Box>
+
+        {/* About Section */}
+        <Paper p="md" radius="md" withBorder style={{ borderColor: "#1971c2", borderWidth: 2 }}>
+          <Group spacing="xs" mb="xs">
+            <ThemeIcon size="lg" radius="md" color="blue" variant="light">
+              <BookOpen size={24} weight="bold" />
+            </ThemeIcon>
+            <Title order={3} fw={600}>About the Department</Title>
+          </Group>
+          <Text c="dimmed" size="sm" style={{ lineHeight: 1.6 }}>
+            {deptInfo.about}
+          </Text>
+        </Paper>
+
+        {/* Facilities Section */}
+        {deptInfo.facilities && (
+          <Paper p="md" radius="md" withBorder style={{ borderColor: "#40c057", borderWidth: 1 }}>
+            <Group spacing="xs" mb="xs">
+              <ThemeIcon size="lg" radius="md" color="green" variant="light">
+                <Wrench size={24} weight="bold" />
+              </ThemeIcon>
+              <Title order={3} fw={600}>Facilities</Title>
+            </Group>
+            <Text c="dimmed" size="sm" style={{ lineHeight: 1.6 }}>
+              {deptInfo.facilities}
+            </Text>
+          </Paper>
+        )}
+
+        {/* Vision Section */}
+        {deptInfo.vision && (
+          <Paper p="md" radius="md" withBorder style={{ borderColor: "#fd7e14", borderWidth: 1 }}>
+            <Group spacing="xs" mb="xs">
+              <ThemeIcon size="lg" radius="md" color="orange" variant="light">
+                <Target size={24} weight="bold" />
+              </ThemeIcon>
+              <Title order={3} fw={600}>Vision</Title>
+            </Group>
+            <Text c="dimmed" size="sm" style={{ lineHeight: 1.6 }}>
+              {deptInfo.vision}
+            </Text>
+          </Paper>
+        )}
+
+        {/* Timetable Section */}
+        {deptInfo.timetable && (
+          <Paper p="md" radius="md" withBorder style={{ background: "#f0f9ff" }}>
+            <Group spacing="xs">
+              <ThemeIcon size="lg" radius="md" color="cyan" variant="filled">
+                <Eye size={24} weight="bold" />
+              </ThemeIcon>
+              <div style={{ flex: 1 }}>
+                <Title order={4} fw={600} mb="xs">Timetable</Title>
+                <Text size="sm" c="dimmed" mb="md">Access the department timetable for all classes and schedules</Text>
+              </div>
+              <Button 
+                component="a"
+                href={deptInfo.timetable}
+                target="_blank"
+                rel="noopener noreferrer"
+                color="cyan"
+                variant="filled"
+              >
+                View Timetable
+              </Button>
+            </Group>
+          </Paper>
+        )}
+      </Stack>
+    </Container>
   );
 }
 

@@ -1,119 +1,237 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
-  Textarea,
-  Select,
+  Badge,
   Button,
-  Notification,
-  Title,
+  Checkbox,
+  Container,
+  Group,
   Paper,
   Stack,
-  Container,
+  Text,
+  TextInput,
+  Textarea,
+  Title,
 } from "@mantine/core";
+import { useSelector } from "react-redux";
 import { host } from "../../../routes/globalRoutes";
 
-export default function Feedbackform() {
-  const [feedback, setFeedback] = useState("");
-  const [rating, setRating] = useState("Good");
-  const [selectedDepartment, setSelectedDepartment] = useState("");
+function formatDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString();
+}
+
+export default function FeedbackForm({ branch, mode }) {
+  const role = useSelector((state) => state.user.role || "");
+  const isStudent = mode ? mode === "student" : String(role).toLowerCase().includes("student");
+
+  const [subject, setSubject] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState(branch || "CSE");
+  const [isConfidential, setIsConfidential] = useState(false);
+  const [uploadFeedback, setUploadFeedback] = useState(null);
+
+  const [feedbackItems, setFeedbackItems] = useState([]);
+  const [resolutionRemarks, setResolutionRemarks] = useState({});
+
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [loadingList, setLoadingList] = useState(false);
 
-  const handleFeedbackChange = (e) => setFeedback(e.target.value);
-  const handleRatingChange = (value) => setRating(value);
-  const handleDepartmentChange = (value) => setSelectedDepartment(value);
+  const token = localStorage.getItem("authToken");
+  const resolvedCategory = useMemo(() => branch || category || "CSE", [branch, category]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMessage("");
+  useEffect(() => {
+    setCategory(branch || "CSE");
+  }, [branch]);
 
-    const token = localStorage.getItem("authToken");
-    const url = `${host}/dep/api/feedback/create/`;
+  useEffect(() => {
+    if (!isStudent) {
+      loadFeedbackItems();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isStudent, branch]);
 
-    const feedbackData = {
-      department: selectedDepartment,
-      rating,
-      remark: feedback,
-    };
+  const loadFeedbackItems = async () => {
+    if (!token) return;
+
+    setLoadingList(true);
 
     try {
-      const response = await axios.post(url, feedbackData, {
+      const response = await axios.get(`${host}/dep/api/feedback/?category=${resolvedCategory}`, {
         headers: {
           Authorization: `Token ${token}`,
-          "Content-Type": "application/json",
+        },
+      });
+      setFeedbackItems(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoadingList(false);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("subject", subject);
+      formData.append("description", description);
+      formData.append("category", resolvedCategory);
+      formData.append("is_confidential", String(isConfidential));
+      if (uploadFeedback) {
+        formData.append("upload_feedback", uploadFeedback);
+      }
+
+      await axios.post(`${host}/dep/api/feedback/`, formData, {
+        headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log("Feedback submitted:", response.data);
-      setFeedback("");
-      setRating("Poor");
-      setSelectedDepartment("");
+      setSubject("");
+      setDescription("");
+      setIsConfidential(false);
+      setUploadFeedback(null);
     } catch (error) {
-      const errorResponse = error.response?.data || error.message;
-      setErrorMessage(
-        errorResponse.detail || "Error submitting feedback. Please try again.",
-      );
-      console.error("Error submitting feedback:", errorResponse);
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleResolve = async (feedbackId) => {
+    try {
+      await axios.post(
+        `${host}/dep/api/feedback/${feedbackId}/resolve/`,
+        {
+          status: "RESOLVED",
+          resolution_remarks: resolutionRemarks[feedbackId] || "",
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      loadFeedbackItems();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
-    <Container size="sm" py="xl">
+    <Container size="md" py="xl">
       <Paper shadow="md" radius="md" p="xl" withBorder>
-        <Title order={2} mb="md">
-          Department Feedback
+        <Title order={2} mb="lg">
+          {isStudent ? "Submit Feedback" : "Resolve Feedback"}
         </Title>
 
-        {errorMessage && (
-          <Notification color="red" title="Error" mb="md">
-            {errorMessage}
-          </Notification>
-        )}
+        {isStudent ? (
+          <form onSubmit={handleSubmit}>
+            <Stack spacing="md">
+              <TextInput
+                label="Subject"
+                placeholder="Enter subject"
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                required
+              />
 
-        <form onSubmit={handleSubmit}>
+              <Textarea
+                label="Description"
+                placeholder="Describe your feedback..."
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                autosize
+                minRows={4}
+                required
+              />
+
+              <Checkbox
+                label="Mark as confidential"
+                checked={isConfidential}
+                onChange={(event) => setIsConfidential(event.currentTarget.checked)}
+              />
+
+              <Group mt="lg">
+                <Button type="submit" loading={loading}>
+                  {loading ? "Submitting..." : "Submit"}
+                </Button>
+              </Group>
+            </Stack>
+          </form>
+        ) : (
           <Stack spacing="md">
-            <Textarea
-              value={feedback}
-              onChange={handleFeedbackChange}
-              placeholder="Enter your feedback here..."
-              label="Remark"
-              required
-              autosize
-              minRows={3}
-            />
+            {loadingList && <Text>Loading feedback...</Text>}
 
-            <Select
-              label="Rating"
-              value={rating}
-              onChange={handleRatingChange}
-              data={["Poor", "Good", "Excellent"]}
-              required
-            />
+            {!loadingList && feedbackItems.length === 0 && (
+              <Text>No feedback found.</Text>
+            )}
 
-            <Select
-              label="Select Department"
-              value={selectedDepartment}
-              onChange={handleDepartmentChange}
-              data={[
-                { value: "CSE", label: "CSE" },
-                { value: "ECE", label: "ECE" },
-                { value: "ME", label: "ME" },
-                { value: "SM", label: "SM" },
-                { value: "BDES", label: "BDES" },
-                { value: "LA", label: "Liberal Arts" },
-                { value: "Natural Science", label: "Natural Science" },
-              ]}
-              required
-            />
+            {feedbackItems.map((item) => (
+              <Paper key={item.id} withBorder p="md">
+                <Group justify="space-between" mb="md">
+                  <Text fw={600}>{item.subject}</Text>
+                  <Badge color={item.status === "RESOLVED" ? "green" : "yellow"}>
+                    {item.status}
+                  </Badge>
+                </Group>
 
-            <Button type="submit" fullWidth loading={loading} size="md">
-              {loading ? "Submitting..." : "Submit Feedback"}
-            </Button>
+                <Text size="sm" mb="sm">
+                  From: {item.is_confidential ? "Confidential" : item.submitter || "Unknown"}
+                </Text>
+                
+                <Text size="sm" mb="md">
+                  {item.description}
+                </Text>
+
+                {item.resolution_remarks && (
+                  <Paper bg="#f0f9ff" p="sm" mb="md" style={{ border: "1px solid #15abff" }}>
+                    <Text size="sm" c="#15abff" fw={500} mb="xs">✓ Resolution</Text>
+                    <Text size="sm">{item.resolution_remarks}</Text>
+                  </Paper>
+                )}
+
+                {item.status !== "RESOLVED" && (
+                  <>
+                    <Text size="sm" fw={600} mb="sm" c="#15abff">
+                      Add Resolution
+                    </Text>
+                    <Textarea
+                      placeholder="Provide resolution remarks..."
+                      value={resolutionRemarks[item.id] || ""}
+                      onChange={(event) =>
+                        setResolutionRemarks((prev) => ({
+                          ...prev,
+                          [item.id]: event.target.value,
+                        }))
+                      }
+                      autosize
+                      minRows={2}
+                      maxRows={4}
+                      mb="md"
+                    />
+
+                    <Button 
+                      onClick={() => handleResolve(item.id)}
+                      size="sm"
+                      fullWidth
+                    >
+                      Mark as Resolved
+                    </Button>
+                  </>
+                )}
+              </Paper>
+            ))}
           </Stack>
-        </form>
+        )}
       </Paper>
     </Container>
   );

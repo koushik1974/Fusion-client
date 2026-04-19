@@ -1,15 +1,10 @@
 import {
-  Button,
-  Card,
-  Collapse,
   Text,
   Title,
-  Grid,
-  Group,
 } from "@mantine/core"; // Use Mantine components
-import { CaretDown, CaretUp } from "@phosphor-icons/react"; // Importing the new icons
-import React, { useState, Suspense, lazy } from "react";
-import studentData from "./Data/Data";
+import React, { useState, useEffect, Suspense, lazy } from "react";
+import PropTypes from "prop-types";
+import { host } from "../../../routes/globalRoutes/index.jsx";
 
 // Lazy load the SpecialTable component
 const SpecialTable = lazy(() => import("./SpecialTable"));
@@ -18,88 +13,68 @@ const columns = [
   { accessorKey: "id", header: "ID" },
   { accessorKey: "name", header: "Name" },
   { accessorKey: "department", header: "Department" },
-  { accessorKey: "year", header: "Year" },
+  { accessorKey: "cabin_details", header: "Cabin Details" },
+  { accessorKey: "contact", header: "Contact" },
+  { accessorKey: "email", header: "Email" },
 ];
 
-function Alumnicat() {
-  const [openCategory, setOpenCategory] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+function Alumnicat({ branch }) {
+  const [alumniData, setAlumniData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const toggleCategory = (category) => {
-    setOpenCategory(openCategory === category ? null : category);
-  };
-
-  const renderStudentTable = (category) => {
-    const data = studentData[category];
-    return (
-      <Suspense fallback={<Text>Loading table...</Text>}>
-        <div
-          style={{
-            overflowX: "auto", // Enable horizontal scrolling
-            width: "100%", // Ensure the container takes the full width
-            marginTop: "10px", // Add some spacing
-          }}
-        >
-          <SpecialTable
-            title="Student"
-            columns={columns}
-            data={data}
-            rowOptions={["3", "4", "6"]}
-          />
-        </div>
-      </Suspense>
-    );
-  };
+  useEffect(() => {
+    setLoading(true);
+    const fetchUrl = `${host}/dep/api/alumni-directory/${branch}/`;
+    fetch(fetchUrl, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${localStorage.getItem("authToken")}`,
+      },
+    })
+      .then((res) =>
+        res.ok ? res.json() : Promise.reject(new Error("Network error")),
+      )
+      .then((data) => {
+        setAlumniData(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setAlumniData([]);
+        setLoading(false);
+      });
+  }, [branch]);
 
   return (
     <div style={{ margin: "20px" }}>
       <Title order={4} style={{ marginBottom: "20px" }}>
-        Alumni Student Categories
+        Alumni
       </Title>
-      <Grid gutter="sm">
-        {["phd", "mtech", "btech"].map((cat) => (
-          <Grid.Col key={cat} span={4}>
-            <Card
-              onClick={() => toggleCategory(cat)}
-              style={{ margin: "10px" }}
-            >
-              <Group position="apart" style={{ cursor: "pointer" }}>
-                <Text weight={600}>{cat.toUpperCase()} Students</Text>
-                {openCategory === cat ? (
-                  <CaretUp size={18} />
-                ) : (
-                  <CaretDown size={18} />
-                )}
-              </Group>
-              <Collapse in={openCategory === cat}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: "10px",
-                    padding: "0 16px",
-                  }}
-                >
-                  <Button
-                    variant="outline"
-                    color="blue"
-                    onClick={() => setSelectedCategory(cat)}
-                    style={{ marginBottom: "5px" }}
-                  >
-                    {cat.toUpperCase()} Students
-                  </Button>
-                </div>
-              </Collapse>
-            </Card>
-          </Grid.Col>
-        ))}
-      </Grid>
-
-      <div style={{ marginTop: "20px" }}>
-        {selectedCategory && renderStudentTable(selectedCategory)}
-      </div>
+      {loading ? (
+        <Text>Loading data...</Text>
+      ) : (
+        <Suspense fallback={<Text>Loading table...</Text>}>
+          <div
+            style={{
+              overflowX: "auto",
+              width: "100%",
+              marginTop: "10px",
+            }}
+          >
+            <SpecialTable
+              title="Alumni"
+              columns={columns}
+              data={alumniData}
+              rowOptions={["10", "20", "50"]}
+            />
+          </div>
+        </Suspense>
+      )}
     </div>
   );
 }
+
+Alumnicat.propTypes = {
+  branch: PropTypes.string.isRequired,
+};
 
 export default Alumnicat;

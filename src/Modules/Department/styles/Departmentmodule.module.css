@@ -22,7 +22,7 @@
   .fusionActiveRecentTab {
     background-color: #15abff13;
     color: #15abff;
-    font-weight: 800;
+    font-weight: 400;
     border-radius: 4px;
   }
   
@@ -44,7 +44,7 @@
   
   .selectinputs::placeholder {
       color: #15abff;
-      font-weight: 600;
+      font-weight: 400;
   }
   
   .selectoptions:hover {
@@ -63,5 +63,116 @@
   .w_full {
     max-width: 1500px;
   }
+
+.pageContainer {
+  width: 100%;
+}
+
+.dashboardFont {
+  font-family: var(--mantine-font-family);
+}
+
+.sectionTitle {
+  color: #228be6;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.portalTitle {
+  color: #228be6;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.portalTitle:hover {
+  color: #15abff;
+}
+
+.navArrowButton {
+  color: #228be6;
+  border-color: #228be61f;
+  background-color: #15abff10;
+}
+
+.navArrowButton:hover {
+  background-color: #15abff22;
+}
+
+.tabActionButton {
+  border: 1px solid #228be633;
+  background-color: #ffffff;
+  color: #2c2e33;
+  font-weight: 600;
+}
+
+.tabActionButton:hover {
+  background-color: #15abff10;
+}
+
+.tabActionButtonActive {
+  border: 1px solid #228be64d;
+  background-color: #15abff18;
+  color: #228be6;
+  font-weight: 700;
+}
+
+.tabPanelPaper {
+  border: 1px solid #228be626;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.departmentSelectButton {
+  color: #228be6;
+  font-weight: 400;
+  border: 1px solid #228be633;
+  background-color: #ffffff;
+}
+
+.departmentTabsScrollArea {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+}
+
+.departmentTabsScrollArea::-webkit-scrollbar {
+  display: none;
+}
+
+.departmentTabsScrollArea::-webkit-scrollbar-track {
+  display: none;
+}
+
+.departmentTabsScrollArea::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+.departmentTabsList {
+  min-width: fit-content;
+}
+
+.departmentTabsList [role='tab'] {
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.announcementCard {
+  border-left: 0.45rem solid #15abff;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.announcementCard:hover {
+  box-shadow: 0 8px 18px rgba(21, 171, 255, 0.14);
+  transform: translateY(-2px);
+}
+
+.errorPanel {
+  border: 1px solid #fa525233;
+  background-color: #fff5f5;
+  color: #e03131;
+}
 
   

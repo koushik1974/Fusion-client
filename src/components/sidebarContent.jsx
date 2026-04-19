@@ -231,8 +231,23 @@ function SidebarContent({ isCollapsed, toggleSidebar }) {
 
   useEffect(() => {
     const filterModules = Modules.filter(
-      (module) => accessibleModules[module.id] || module.id === "home",
+      (module) =>
+        accessibleModules[module.id] ||
+        module.id === "home" ||
+        module.id === "department",
     );
+
+    const orderPriority = {
+      home: 0,
+      department: 1,
+    };
+
+    filterModules.sort((a, b) => {
+      const ap = orderPriority[a.id] ?? 99;
+      const bp = orderPriority[b.id] ?? 99;
+      return ap - bp;
+    });
+
     setFilteredModules(filterModules);
   }, [accessibleModules]);
 

@@ -9,7 +9,12 @@ import {
   Badge,
   Title,
   Box,
+  ActionIcon,
+  Tooltip,
 } from "@mantine/core";
+import { Trash } from "@phosphor-icons/react";
+import axios from "axios";
+import { useSelector } from "react-redux";
 import { host } from "../../../routes/globalRoutes";
 
 // Format date
@@ -26,8 +31,12 @@ function formatDateWithPeriod(dateString) {
 export default function Announcements({ branch }) {
   const [announcementsData, setAnnouncementsData] = useState([]);
   const authToken = localStorage.getItem("authToken");
+  const role = useSelector((state) => state.user.role || "");
+  const normalizedRole = String(role).toLowerCase();
+  // Only HOD can delete announcements from database
+  const canDelete = normalizedRole.startsWith("hod") || normalizedRole.includes("hod ");
 
-  useEffect(() => {
+  const loadAnnouncements = () => {
     fetch(`${host}/dep/api/ann-data/${branch}/`, {
       method: "GET",
       headers: {
@@ -47,19 +56,42 @@ export default function Announcements({ branch }) {
       .catch((error) => {
         console.error("Error fetching announcements data:", error);
       });
+  };
+
+  useEffect(() => {
+    loadAnnouncements();
   }, [authToken, branch]);
+
+  const handleDelete = async (announcementId) => {
+    const confirmDelete = window.confirm(
+      "Delete this announcement? This cannot be undone.",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${host}/dep/api/announcements/${announcementId}/`, {
+        headers: {
+          Authorization: `Token ${authToken}`,
+        },
+      });
+      loadAnnouncements();
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+      alert(
+        error.response?.data?.detail || "You are not allowed to delete this announcement.",
+      );
+    }
+  };
 
   return (
     <Suspense fallback={<Text>Loading announcements...</Text>}>
-      <Grid gutter="lg">
+      <Grid gutter="md">
         {" "}
         {/* Add gutter between grid items */}
         {announcementsData.length > 0 ? (
           announcementsData.map((announcement) => (
             <Grid.Col span={{ base: 12, md: 6 }} key={announcement.id}>
-              <Box mb="md">
-                {" "}
-                {/* Add spacing between cards */}
+              <Box mb="sm">
                 <Paper
                   shadow="sm"
                   radius="md"
@@ -90,6 +122,19 @@ export default function Announcements({ branch }) {
                       <Badge color="blue" variant="light">
                         {announcement.maker_id || "Unknown"}
                       </Badge>
+
+                      {canDelete && (
+                        <Tooltip label="Delete announcement" withinPortal>
+                          <ActionIcon
+                            variant="subtle"
+                            color="red"
+                            onClick={() => handleDelete(announcement.id)}
+                            aria-label="Delete announcement"
+                          >
+                            <Trash size={18} />
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
                     </Flex>
                   </Flex>
                 </Paper>

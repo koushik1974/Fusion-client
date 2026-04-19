@@ -80,7 +80,7 @@ function FacilityGallery({ branch }) {
       );
       setSelectedFacilities([]);
     } catch (error) {
-      const errorResponse = error.response?.data || error.message;
+      const errorResponse = error.response?.data;
       setErrorMessage(
         errorResponse.detail || "Error deleting facilities. Please try again.",
       );
