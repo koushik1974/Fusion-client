@@ -124,7 +124,7 @@ export default function App() {
   const role = useSelector((state) => state.user.role);
   return (
     <MantineProvider theme={theme}>
-      <Notifications position="top-center" autoClose={2000} limit={1} />
+      <Notifications position="top-center" autoClose={3000} limit={3} />
 
       {![
         "/accounts/login",

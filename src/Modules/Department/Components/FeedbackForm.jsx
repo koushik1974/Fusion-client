@@ -13,6 +13,7 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { useSelector } from "react-redux";
 import { host } from "../../../routes/globalRoutes";
 
@@ -35,6 +36,8 @@ export default function FeedbackForm({ branch, mode }) {
 
   const [feedbackItems, setFeedbackItems] = useState([]);
   const [resolutionRemarks, setResolutionRemarks] = useState({});
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [loadingList, setLoadingList] = useState(false);
@@ -75,6 +78,8 @@ export default function FeedbackForm({ branch, mode }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+    setError(false);
+    setSuccess(false);
 
     try {
       const formData = new FormData();
@@ -97,8 +102,32 @@ export default function FeedbackForm({ branch, mode }) {
       setDescription("");
       setIsConfidential(false);
       setUploadFeedback(null);
+      setSuccess(true);
+
+      // Show success notification
+      notifications.show({
+        title: "Success",
+        message: "Feedback submitted successfully",
+        color: "green",
+        autoClose: 3000,
+      });
+      
+      // Reset success state after 3 seconds
+      setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       console.error("Error:", error);
+      setError(true);
+      
+      // Show error notification
+      notifications.show({
+        title: "Error",
+        message: error.response?.data?.detail || "Failed to submit feedback",
+        color: "red",
+        autoClose: 3000,
+      });
+      
+      // Reset error state after 3 seconds
+      setTimeout(() => setError(false), 3000);
     } finally {
       setLoading(false);
     }
@@ -161,8 +190,13 @@ export default function FeedbackForm({ branch, mode }) {
               />
 
               <Group mt="lg">
-                <Button type="submit" loading={loading}>
-                  {loading ? "Submitting..." : "Submit"}
+                <Button 
+                  type="submit" 
+                  loading={loading}
+                  color={success ? "green" : error ? "red" : "blue"}
+                  fullWidth
+                >
+                  {success ? "Submitted!" : error ? "Failed!" : loading ? "Submitting..." : "Submit"}
                 </Button>
               </Group>
             </Stack>

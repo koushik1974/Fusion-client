@@ -389,11 +389,11 @@ export default function LandingPage() {
 
   // Get role badge info for display
   const getRoleBadgeInfo = () => {
-    if (isHOD) return { label: "Head of Department", color: "red" };
-    if (isDeptAdmin) return { label: "Department Admin", color: "blue" };
-    if (isAssistantProfessor) return { label: "Faculty", color: "cyan" };
-    if (isStudent) return { label: "Student", color: "grape" };
-    return { label: "Guest", color: "gray" };
+    if (isHOD) return { label: "Head of Department", color: "red", warning: false };
+    if (isDeptAdmin) return { label: "Department Admin", color: "blue", warning: false };
+    if (isAssistantProfessor) return { label: "Faculty", color: "cyan", warning: false };
+    if (isStudent) return { label: "Student", color: "grape", warning: false };
+    return { label: "Guest - Limited Access", color: "gray", warning: true };
   };
 
   const breadcrumbItems = [
@@ -416,10 +416,11 @@ export default function LandingPage() {
           <Badge 
             size="lg" 
             color={getRoleBadgeInfo().color}
-            variant="filled"
-            title={`Current Role: ${effectiveRole || 'Not Detected'}`}
+            variant={getRoleBadgeInfo().warning ? "outline" : "filled"}
+            title={`Current Role: ${effectiveRole || 'Not Detected'}${getRoleBadgeInfo().warning ? ' - Please contact admin if this is incorrect' : ''}`}
           >
             {getRoleBadgeInfo().label}
+            {getRoleBadgeInfo().warning && " ⚠️"}
           </Badge>
         </Group>
       </Box>

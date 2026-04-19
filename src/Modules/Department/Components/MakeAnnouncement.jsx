@@ -46,17 +46,23 @@ export default function MakeAnnouncement() {
     formData.append("message", announcement);
 
     try {
-      await axios.post(url, formData, {
+      const response = await axios.post(url, formData, {
         headers: {
           Authorization: `Token ${token}`,
         },
       });
 
+      console.log("✅ Announcement posted successfully:", response);
+      
+      // Clear form
       setProgramme("");
       setBatch("");
       setDepartment("");
       setAnnouncement("");
+      
+      // Set success state
       setSuccess(true);
+      setLoading(false);
       
       // Show success notification
       notifications.show({
@@ -69,21 +75,20 @@ export default function MakeAnnouncement() {
       // Reset success state after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("❌ Error posting announcement:", error);
+      setLoading(false);
       setError(true);
       
       // Show error notification
       notifications.show({
         title: "Error",
-        message: error.response?.data?.detail || "Failed to publish announcement",
+        message: error.response?.data?.detail || error.message || "Failed to publish announcement",
         color: "red",
         autoClose: 3000,
       });
       
       // Reset error state after 3 seconds
       setTimeout(() => setError(false), 3000);
-    } finally {
-      setLoading(false);
     }
   };
 
