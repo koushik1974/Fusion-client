@@ -15,6 +15,7 @@ import {
   Card,
   Button,
   Anchor,
+  Grid,
 } from "@mantine/core";
 import { host } from "../../../routes/globalRoutes";
 import StockViewList from "./StockViewList";
@@ -65,7 +66,7 @@ export default function DepartmentResources() {
       <Paper className={classes.tabPanelPaper} p="lg" radius="md" withBorder>
         <Stack gap="md">
           <div>
-            <Title order={3} fw={400}>
+            <Title order={3} fw={300} c="blue.7">
               Department Resources
             </Title>
             <Text size="sm" c="dimmed" mt={4}>
@@ -86,7 +87,7 @@ export default function DepartmentResources() {
               {/* Department-Specific Labs Section */}
               {departmentLabs && departmentLabs.length > 0 && (
                 <div>
-                  <Title order={4} fw={400} mb="xs">
+                  <Title order={4} fw={300} c="blue.7" mb="xs">
                     Department Labs
                   </Title>
                   <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
@@ -111,7 +112,7 @@ export default function DepartmentResources() {
               {/* HOD Details Section */}
               {hodDetails ? (
                 <div>
-                  <Title order={4} fw={400} mb="xs">
+                  <Title order={4} fw={300} c="blue.7" mb="xs">
                     Head of Department
                   </Title>
                   <Paper p="md" radius="md" withBorder>
@@ -168,7 +169,7 @@ export default function DepartmentResources() {
                 </div>
               ) : (
                 <div>
-                  <Title order={4} fw={400} mb="xs">
+                  <Title order={4} fw={300} c="blue.7" mb="xs">
                     Head of Department
                   </Title>
                   <Paper p="md" radius="md" withBorder>
@@ -178,52 +179,102 @@ export default function DepartmentResources() {
               )}
 
               <div>
-                <Title order={4} fw={400} mb="xs">
+                <Title order={4} fw={300} c="blue.7" mb="xs">
                   Labs
                 </Title>
                 {labs.length === 0 ? (
-                  <Text c="dimmed">No lab records available.</Text>
+                  <Center py="lg">
+                    <Text c="dimmed" size="md">
+                      No lab records available.
+                    </Text>
+                  </Center>
                 ) : (
                   <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
                     {labs.map((lab) => (
-                      <Paper key={lab.id} p="md" radius="md" withBorder>
-                        <Stack gap={6}>
-                          <Text fw={500}>{lab.name}</Text>
-                          <Group gap="xs">
-                            <Badge variant="light">{lab.day}</Badge>
-                            <Badge variant="light">{lab.start_time} - {lab.end_time}</Badge>
+                      <Card key={lab.id} shadow="md" padding="md" radius="md" withBorder>
+                        <Stack gap="sm">
+                          <Group justify="space-between">
+                            <Text fw={600} size="md">
+                              {lab.name}
+                            </Text>
+                            <Badge size="sm" variant="light" color="blue">
+                              Lab
+                            </Badge>
                           </Group>
-                          <Text size="sm" c="dimmed">
-                            Instructor: {lab.instructor || "-"}
-                          </Text>
+                          <Divider my="xs" />
+                          {(lab.day || lab.start_time) && (
+                            <Group gap="xs">
+                              {lab.day && <Badge variant="outline" size="sm">{lab.day}</Badge>}
+                              {lab.start_time && (
+                                <Badge variant="outline" size="sm">
+                                  {lab.start_time} - {lab.end_time}
+                                </Badge>
+                              )}
+                            </Group>
+                          )}
+                          {lab.instructor && (
+                            <Text size="sm" c="dimmed">
+                              <strong>Instructor:</strong> {lab.instructor}
+                            </Text>
+                          )}
+                          {lab.capacity && (
+                            <Text size="sm" c="dimmed">
+                              <strong>Capacity:</strong> {lab.capacity}
+                            </Text>
+                          )}
                         </Stack>
-                      </Paper>
+                      </Card>
                     ))}
                   </SimpleGrid>
                 )}
               </div>
 
               <div>
-                <Title order={4} fw={400} mb="xs">
+                <Title order={4} fw={300} c="blue.7" mb="xs">
                   Facilities
                 </Title>
                 {facilities.length === 0 ? (
-                  <Text c="dimmed">No facility records available yet.</Text>
+                  <Center py="lg">
+                    <Text c="dimmed" size="md">
+                      No facility records available yet.
+                    </Text>
+                  </Center>
                 ) : (
                   <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
                     {facilities.map((facility) => (
-                      <Paper key={facility.id} p="md" radius="md" withBorder>
-                        <Stack gap={6}>
-                          <Text fw={500}>{facility.name}</Text>
-                          <Group gap="xs">
-                            <Badge variant="light">{facility.branch || "General"}</Badge>
-                            <Badge variant="light">{facility.lab || facility.location || "-"}</Badge>
+                      <Card key={facility.id} shadow="md" padding="md" radius="md" withBorder>
+                        <Stack gap="sm">
+                          <Group justify="space-between">
+                            <Text fw={600} size="md">
+                              {facility.name}
+                            </Text>
+                            <Badge size="sm" variant="light" color="pink">
+                              Facility
+                            </Badge>
                           </Group>
-                          <Text size="sm" c="dimmed">
-                            Amount: {facility.amount}
-                          </Text>
+                          <Divider my="xs" />
+                          {facility.branch && (
+                            <Badge variant="outline" size="sm">
+                              {facility.branch}
+                            </Badge>
+                          )}
+                          {facility.location && (
+                            <Text size="sm" c="dimmed">
+                              <strong>Location:</strong> {facility.location}
+                            </Text>
+                          )}
+                          {facility.amount && (
+                            <Text size="sm" c="dimmed">
+                              <strong>Amount:</strong> {facility.amount}
+                            </Text>
+                          )}
+                          {facility.lab && (
+                            <Text size="sm" c="dimmed">
+                              <strong>Lab:</strong> {facility.lab}
+                            </Text>
+                          )}
                         </Stack>
-                      </Paper>
+                      </Card>
                     ))}
                   </SimpleGrid>
                 )}

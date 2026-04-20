@@ -1,4 +1,4 @@
-import React, { useRef, useState, Suspense, lazy } from "react";
+import React, { useRef, useState, Suspense, lazy, memo, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -15,9 +15,23 @@ const Announcements = lazy(() => import("./Announcements"));
 
 const tabItems = ["ALL", "CSE", "ECE", "ME", "SM"];
 
-export default function BrowseAnnouncements() {
+function BrowseAnnouncements() {
   const [activeTab, setActiveTab] = useState("0");
+  const [refreshKey, setRefreshKey] = useState(0);
   const tabsListRef = useRef(null);
+  
+  // Listen for storage events when announcement is published
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "force_refresh_announcements" && e.newValue === "true") {
+        console.log("🔄 Storage event detected - refreshing announcements");
+        setRefreshKey(prev => prev + 1);
+      }
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const handleTabChange = (direction) => {
     const newIndex =
@@ -30,7 +44,11 @@ export default function BrowseAnnouncements() {
   const renderTabContent = () => (
     <Suspense fallback={<Loader />}>
       <Paper withBorder p="lg" radius="md" shadow="sm" mt="md">
-        <Announcements branch={tabItems[+activeTab]} />
+        <Announcements 
+          key={refreshKey}
+          branch={tabItems[+activeTab]} 
+          isAllTab={tabItems[+activeTab] === "ALL"}
+        />
       </Paper>
     </Suspense>
   );
@@ -104,3 +122,5 @@ export default function BrowseAnnouncements() {
     </Container>
   );
 }
+
+export default memo(BrowseAnnouncements);

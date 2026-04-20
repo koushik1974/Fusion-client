@@ -11,41 +11,19 @@ const Faculty = lazy(() => import("./Faculty"));
 const Studentcat = lazy(() => import("./Studentcat"));
 const Announcements = lazy(() => import("./Announcements"));
 const Alumnicat = lazy(() => import("./Alumnicat"));
-const ViewFeedback = lazy(() => import("./ViewFeedback"));
 
 function DeptTabs({ branch }) {
   const [activeTab, setActiveTab] = useState("0");
 
   const role = useSelector((state) => state.user.role);
 
-  const isFeedbackAvailable = [
-    "HOD (CSE)",
-    "deptadmin_cse",
-    "HOD (SM)",
-    "deptadmin_sm",
-    "HOD (ECE)",
-    "deptadmin_ece",
-    "HOD (ME)",
-    "deptadmin_me",
-    "HOD (Design)",
-    "deptadmin_design",
-    "HOD (Liberal Arts)",
-    "deptadmin_liberalarts",
-    "HOD (NS)",
-    "deptadmin_ns",
-  ].includes(role);
-
   const tabItems = [
     { title: "About Us" },
+    { title: "Announcements", id: "4", department: branch },
     { title: "Faculty", id: "2" },
     { title: "Students", id: "3", department: branch },
-    { title: "Announcements", id: "4", department: branch },
     { title: "Alumni" },
   ];
-
-  if (isFeedbackAvailable) {
-    tabItems.push({ title: "Feedback" });
-  }
 
   const handleTabChange = (direction) => {
     const newIndex =
@@ -57,23 +35,22 @@ function DeptTabs({ branch }) {
 
   const renderTabContent = () => {
     const components = {
-      0: <AboutUs branch={branch} />,
-      1: <Faculty branch={branch} />,
-      2: <Studentcat branch={branch} />,
-      3: <Announcements branch={branch} />,
-      4: <Alumnicat branch={branch} />,
-      5: isFeedbackAvailable ? <ViewFeedback branch={branch} /> : null,
+      "0": <AboutUs branch={branch} />,
+      "1": <Announcements branch={branch} />,
+      "2": <Faculty branch={branch} />,
+      "3": <Studentcat branch={branch} />,
+      "4": <Alumnicat branch={branch} />,
     };
     return components[activeTab] || null;
   };
 
   return (
     <Box px="md" py="md">
-      <Title order={2} mb="md" fw={400} c="blue.7">
+      <Title order={2} mb="xl" fw={300} c="blue.7" align="center">
         Welcome to {branch} Department
       </Title>
 
-      <Flex align="center" gap="xs" mb="lg">
+      <Flex align="center" justify="center" gap="xs" mb="lg">
         <Button
           onClick={() => handleTabChange("prev")}
           variant="light"

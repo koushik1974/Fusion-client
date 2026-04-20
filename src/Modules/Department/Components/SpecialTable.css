@@ -1,0 +1,67 @@
+/* Professional Table Styling */
+
+.special-table {
+  background-color: #ffffff;
+  border-collapse: collapse;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.special-table .table-head {
+  background-color: #f5f7fa;
+  border-bottom: 2px solid #e0e6ed;
+}
+
+.special-table .table-head .header-row {
+  background-color: #f5f7fa;
+}
+
+.special-table .table-head .header-cell {
+  background-color: #f5f7fa;
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 14px 16px !important;
+  border-right: 1px solid #e0e6ed;
+  border-bottom: 2px solid #e0e6ed;
+  text-transform: none;
+  letter-spacing: 0.3px;
+}
+
+.special-table .table-head .header-cell:last-child {
+  border-right: none;
+}
+
+.special-table .table-body .body-row {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+  background-color: #ffffff;
+}
+
+.special-table .table-body .body-row:hover {
+  background-color: #f9fafb;
+}
+
+.special-table .table-body .body-cell {
+  padding: 13px 16px !important;
+  color: #4a5568;
+  font-size: 0.95rem;
+  border-right: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.special-table .table-body .body-cell:last-child {
+  border-right: none;
+}
+
+.special-table .table-body .body-row:last-child {
+  border-bottom: 1px solid #e0e6ed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .special-table .table-head .header-cell,
+  .special-table .table-body .body-cell {
+    padding: 10px 12px !important;
+    font-size: 0.9rem;
+  }
+}

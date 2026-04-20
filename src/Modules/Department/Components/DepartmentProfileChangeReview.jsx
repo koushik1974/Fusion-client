@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
   Textarea,
+  Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { host } from "../../../routes/globalRoutes";
@@ -91,9 +92,9 @@ function DepartmentProfileChangeReview() {
     <Paper className={classes.tabPanelPaper} p="lg" radius="md" withBorder>
       <Stack gap="md">
         <div>
-          <Text fw={500} size="lg" className={classes.sectionTitle}>
+          <Title order={3} fw={300} c="blue.7">
             Review Profile Change Requests
-          </Text>
+          </Title>
           <Text size="sm" c="dimmed" mt={4}>
             Dept Admin and HOD can review, approve, or reject department-level profile updates.
           </Text>

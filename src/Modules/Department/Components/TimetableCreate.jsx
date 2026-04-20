@@ -93,7 +93,7 @@ export default function TimetableCreate({ branch }) {
   return (
     <Container size="md" py="xl">
       <Paper shadow="md" radius="md" p="xl" withBorder>
-        <Title order={2} mb="md" fw={400}>
+        <Title order={2} mb="md" fw={300} c="blue.7" align="center">
           Create Timetable
         </Title>
 

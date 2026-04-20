@@ -21,13 +21,12 @@ import {
   Group,
   Button,
 } from "@mantine/core";
+import { host } from "../../../routes/globalRoutes";
 
 export default function ViewFeedback({ branch }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [summary, setSummary] = useState("");
-  const [summaryEmoji, setSummaryEmoji] = useState("");
   const [progressValues, setProgressValues] = useState([]);
   const authToken = localStorage.getItem("authToken");
 
@@ -35,7 +34,7 @@ export default function ViewFeedback({ branch }) {
     const fetchFeedback = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/dep/api/feedback/",
+          `${host}/dep/api/feedback/`,
           {
             headers: {
               Authorization: `Token ${authToken}`,
@@ -43,11 +42,13 @@ export default function ViewFeedback({ branch }) {
           },
         );
 
-        const filteredFeedback = response.data.filter(
-          (item) => item.department === branch,
+        const feedbackData = Array.isArray(response.data) 
+          ? response.data 
+          : (response.data.results || []);
+        const filteredFeedback = feedbackData.filter(
+          (item) => item.category === branch,
         );
         setData(filteredFeedback);
-        generateSummary(filteredFeedback);
         setProgressValues(new Array(filteredFeedback.length).fill(0));
 
         setTimeout(() => {
@@ -68,32 +69,6 @@ export default function ViewFeedback({ branch }) {
 
     fetchFeedback();
   }, [branch, authToken]);
-
-  const generateSummary = (feedbackData) => {
-    const positive = feedbackData.filter(
-      (item) => item.rating === "Excellent",
-    ).length;
-    const good = feedbackData.filter((item) => item.rating === "Good").length;
-    const poor = feedbackData.filter((item) => item.rating === "Poor").length;
-
-    let summaryText = "Feedback Summary: ";
-    let emoji = "";
-
-    if (positive > good && positive > poor) {
-      summaryText += "Most users are happy with this department.";
-      emoji = "😊";
-    } else if (poor > good && poor > positive) {
-      summaryText +=
-        "Some users have expressed concerns about this department.";
-      emoji = "😞";
-    } else {
-      summaryText += "There is a mix of opinions about this department.";
-      emoji = "😐";
-    }
-
-    setSummary(summaryText);
-    setSummaryEmoji(emoji);
-  };
 
   const getProgressValue = (rating) => {
     if (rating === "Excellent") return 100;
@@ -152,56 +127,6 @@ export default function ViewFeedback({ branch }) {
           </Title>
         </Grid.Col>
       </Grid>
-
-      {summary && (
-        <Grid mb="lg" justify="center">
-          <Grid.Col span={12} sm={8}>
-            <Card
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              withBorder
-              style={{
-                background: "#fff",
-                boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.1)",
-                borderRadius: "10px",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <Group position="center" style={{ marginBottom: "15px" }}>
-                <Text
-                  size="lg"
-                  weight={400}
-                  align="center"
-                  style={{
-                    color: "#333",
-                    letterSpacing: "1px",
-                    paddingTop: "20px",
-                    textShadow: "1px 1px 3px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  {summary} {summaryEmoji}
-                </Text>
-              </Group>
-              <Badge
-                color="yellow"
-                size="lg"
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  left: "10px",
-                  borderRadius: "12px",
-                  backgroundColor: "#f39c12",
-                  color: "#fff",
-                }}
-              >
-                Summary
-              </Badge>
-            </Card>
-          </Grid.Col>
-        </Grid>
-      )}
 
       <Grid gutter="md" justify="center" style={{ paddingTop: "30px" }}>
         {data.map((feedback, index) => (

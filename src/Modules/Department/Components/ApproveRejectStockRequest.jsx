@@ -45,7 +45,9 @@ export default function ApproveRejectStockRequest({ role = "", isHOD = false, br
           Authorization: `Token ${authToken}`,
         },
       });
-      const all = Array.isArray(response.data) ? response.data : [];
+      const all = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data.results || []);
       setRequests(all.filter((item) => item.status === "PENDING"));
     } catch (error) {
       setErrorMessage(error.response?.data?.detail || "Unable to load requests.");
@@ -109,7 +111,7 @@ export default function ApproveRejectStockRequest({ role = "", isHOD = false, br
 
   return (
     <Container size="md" py="xl">
-      <Title order={2} mb="md" fw={400}>
+      <Title order={2} mb="md" fw={300} c="blue.7" align="center">
         Approve or Reject Stock Request
       </Title>
 

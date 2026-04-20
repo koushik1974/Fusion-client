@@ -157,6 +157,23 @@
   white-space: nowrap;
   flex-shrink: 0;
   font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  background-color: transparent;
+  color: #666;
+}
+
+.departmentTabsList [role='tab']:hover {
+  background-color: #15abff15;
+  color: #228be6;
+}
+
+.departmentTabsList [role='tab'][data-active='true'] {
+  background-color: #15abff13;
+  color: #15abff;
+  font-weight: 500;
 }
 
 .announcementCard {

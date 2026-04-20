@@ -96,7 +96,7 @@ export default function RequestStockItem() {
   return (
     <Container size="sm" py="xl">
       <Paper shadow="md" radius="md" p="xl" withBorder>
-        <Title order={2} mb="lg">
+        <Title order={2} mb="lg" fw={300} c="blue.7" align="center">
           Request Stock Item
         </Title>
 

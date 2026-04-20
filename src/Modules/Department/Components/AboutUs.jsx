@@ -91,7 +91,7 @@ export default function AboutUs({ branch }) {
           <Group spacing="sm" mb="md">
             <Badge size="lg" variant="light" color="blue">{branch}</Badge>
           </Group>
-          <Title order={1} size="h2" fw={700} mb="md">
+          <Title order={1} size="h2" fw={300} c="blue.7" mb="md">
             {deptInfo.title}
           </Title>
         </Box>
@@ -102,7 +102,7 @@ export default function AboutUs({ branch }) {
             <ThemeIcon size="lg" radius="md" color="blue" variant="light">
               <BookOpen size={24} weight="bold" />
             </ThemeIcon>
-            <Title order={3} fw={600}>About the Department</Title>
+            <Title order={3} fw={300} c="blue.7">About the Department</Title>
           </Group>
           <Text c="dimmed" size="sm" style={{ lineHeight: 1.6 }}>
             {deptInfo.about}
@@ -116,7 +116,7 @@ export default function AboutUs({ branch }) {
               <ThemeIcon size="lg" radius="md" color="green" variant="light">
                 <Wrench size={24} weight="bold" />
               </ThemeIcon>
-              <Title order={3} fw={600}>Facilities</Title>
+              <Title order={3} fw={300} c="green.7">Facilities</Title>
             </Group>
             <Text c="dimmed" size="sm" style={{ lineHeight: 1.6 }}>
               {deptInfo.facilities}
@@ -131,7 +131,7 @@ export default function AboutUs({ branch }) {
               <ThemeIcon size="lg" radius="md" color="orange" variant="light">
                 <Target size={24} weight="bold" />
               </ThemeIcon>
-              <Title order={3} fw={600}>Vision</Title>
+              <Title order={3} fw={300} c="orange.7">Vision</Title>
             </Group>
             <Text c="dimmed" size="sm" style={{ lineHeight: 1.6 }}>
               {deptInfo.vision}
@@ -147,7 +147,7 @@ export default function AboutUs({ branch }) {
                 <Eye size={24} weight="bold" />
               </ThemeIcon>
               <div style={{ flex: 1 }}>
-                <Title order={4} fw={600} mb="xs">Timetable</Title>
+                <Title order={4} fw={300} c="cyan.7" mb="xs">Timetable</Title>
                 <Text size="sm" c="dimmed" mb="md">Access the department timetable for all classes and schedules</Text>
               </div>
               <Button 

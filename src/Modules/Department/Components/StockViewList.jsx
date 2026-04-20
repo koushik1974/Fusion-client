@@ -41,7 +41,9 @@ export default function StockViewList() {
         },
       });
 
-      const stockItems = Array.isArray(response.data) ? response.data : [];
+      const stockItems = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data.results || []);
       const filtered = stockItems.filter((item) => {
         const currentStatus = String(item.status || "").toUpperCase();
         const allowedStatuses = ["APPROVED", "REJECTED", "ALLOCATED", "ISSUED"];
@@ -65,7 +67,7 @@ export default function StockViewList() {
   return (
     <Container size="xl" py="xl">
       <Paper shadow="md" radius="md" p="xl" withBorder>
-        <Title order={2} mb="md" fw={400}>
+        <Title order={2} mb="md" fw={300} c="blue.7" align="center">
           Stock List
         </Title>
 
@@ -96,7 +98,7 @@ export default function StockViewList() {
         ) : (
           <Stack spacing="md">
             <div style={{ overflowX: "auto" }}>
-              <Table striped highlightOnHover withTableBorder withColumnBorders>
+              <Table highlightOnHover withTableBorder withColumnBorders>
                 <Table.Thead>
                   <Table.Tr style={{ backgroundColor: "#f8f9fa" }}>
                     <Table.Th style={{ fontWeight: 600 }}>Item</Table.Th>
@@ -113,7 +115,7 @@ export default function StockViewList() {
                 </Table.Thead>
                 <Table.Tbody>
                   {items.map((item) => (
-                    <Table.Tr key={item.id} style={{ transition: "background-color 0.2s ease" }}>
+                    <Table.Tr key={item.id} style={{ backgroundColor: "white", transition: "background-color 0.2s ease" }}>
                       <Table.Td style={{ maxWidth: "150px", overflow: "hidden", textOverflow: "ellipsis" }}>
                         <Text size="sm" fw={500}>{item.stock_item_name}</Text>
                       </Table.Td>
@@ -159,10 +161,6 @@ export default function StockViewList() {
                 </Table.Tbody>
               </Table>
             </div>
-
-            <Text size="sm" c="dimmed">
-              📋 Showing {items.length} stock {items.length === 1 ? "entry" : "entries"} (approved, rejected, allocated, and issued only)
-            </Text>
           </Stack>
         )}
       </Paper>

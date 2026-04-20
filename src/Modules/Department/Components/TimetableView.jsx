@@ -91,7 +91,7 @@ export default function TimetableView({ branch }) {
   return (
     <Container size="xl" py="xl">
       <Paper shadow="md" radius="md" p="xl" withBorder>
-        <Title order={2} mb="md" fw={400}>
+        <Title order={2} mb="md" fw={300} c="blue.7" align="center">
           View Timetable
         </Title>
 
@@ -129,24 +129,24 @@ export default function TimetableView({ branch }) {
         ) : items.length === 0 ? (
           <Text c="dimmed">No timetable entries available.</Text>
         ) : (
-          <Table striped highlightOnHover withTableBorder withColumnBorders>
-            <Table.Thead>
+          <Table highlightOnHover withTableBorder withColumnBorders>
+            <Table.Thead style={{ backgroundColor: "#f8f9fa" }}>
               <Table.Tr>
-                <Table.Th>Day</Table.Th>
-                <Table.Th>Time</Table.Th>
-                <Table.Th>Subject</Table.Th>
-                <Table.Th>Faculty</Table.Th>
-                <Table.Th>Room</Table.Th>
-                <Table.Th>Batch</Table.Th>
-                <Table.Th>Programme</Table.Th>
-                <Table.Th>Sem</Table.Th>
-                <Table.Th>Updated</Table.Th>
-                <Table.Th>Action</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Day</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Time</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Subject</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Faculty</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Room</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Batch</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Programme</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Sem</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Updated</Table.Th>
+                <Table.Th style={{ fontWeight: 600 }}>Action</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {items.map((item) => (
-                <Table.Tr key={item.id}>
+                <Table.Tr key={item.id} style={{ backgroundColor: "white" }}>
                   <Table.Td>{item.day_of_week}</Table.Td>
                   <Table.Td>
                     {item.start_time} - {item.end_time}

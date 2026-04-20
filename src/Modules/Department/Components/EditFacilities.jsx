@@ -235,7 +235,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
         <Grid gutter="md" mt="xl">
           <Grid.Col xs={12} md={5}>
             <Paper withBorder shadow="sm" p="lg" radius="md">
-              <Title order={5} mb="sm">
+              <Title order={5} fw={300} c="blue.7" mb="sm">
                 Update Department Contact
               </Title>
               <form onSubmit={handleSubmit}>
@@ -275,7 +275,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
 
           <Grid.Col xs={12} md={5}>
             <Paper withBorder shadow="sm" p="lg" radius="md">
-              <Title order={5} mb="sm">
+              <Title order={5} fw={300} c="blue.7" mb="sm">
                 Add Lab
               </Title>
               <form onSubmit={handleLabSubmit}>
@@ -317,7 +317,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
               </form>
             </Paper>
             <Paper withBorder shadow="sm" p="lg" radius="md">
-              <Title order={4} mb="md">
+              <Title order={4} fw={300} c="blue.7" mb="md">
                 Add Facility
               </Title>
               <form onSubmit={handleFacilitySubmit}>
@@ -365,7 +365,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
           </Grid.Col>
         </Grid>
         <Divider my="xl" />
-        <Title order={4} mb="md">
+        <Title order={4} fw={300} c="blue.7" mb="md">
           Manage Labs
         </Title>
         <div
@@ -430,7 +430,7 @@ export default function EditFacilities({ setIsEditing, branch }) {
         )}
         {/* Add FacilityGallery below the labs section */}
         <Divider my="xl" />
-        <Title order={4} mb="md">
+        <Title order={4} fw={300} c="blue.7" mb="md">
           Manage Facilities
         </Title>
         <FacilityGallery branch={branch} /> {/* Pass branch prop here */}

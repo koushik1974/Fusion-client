@@ -30,6 +30,7 @@ import classes from "../styles/Departmentmodule.module.css";
 const MakeAnnouncement = lazy(() => import("./MakeAnnouncement"));
 const BrowseAnnouncements = lazy(() => import("./BrowseAnnouncements"));
 const FeedbackForm = lazy(() => import("./FeedbackForm"));
+const MyFeedback = lazy(() => import("./MyFeedback"));
 const RequestStockItem = lazy(() => import("./RequestStockItem"));
 const ApproveRejectStockRequest = lazy(() => import("./ApproveRejectStockRequest"));
 const AllocateIssueStockRequest = lazy(() => import("./AllocateIssueStockRequest"));
@@ -56,7 +57,7 @@ export default function LandingPage() {
   const [serverRole, setServerRole] = useState(null);
   const [serverRoleTokens, setServerRoleTokens] = useState([]);
   const [branch, setBranch] = useState(null);
-  const [activeTab, setActiveTab] = useState("1"); // Default active tab
+  const [activeTab, setActiveTab] = useState(null); // Will be set based on role
   const [loading, setLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [actionTabStart, setActionTabStart] = useState(0);
@@ -95,47 +96,46 @@ export default function LandingPage() {
   // Define tabs per role (check more specific roles first)
   let baseActionTabs = [];
   if (isDeptAdmin && !isHOD) {
-    // Dept Admin: make announcements, browse announcements, allocate/reject stock, stock list,
-    // resolve feedback, create timetable, view timetable, profile edit, resources
+    // Dept Admin: make announcements, browse announcements, resources, timetable management, stock management, feedback, profile
     baseActionTabs = [
       "0",                // Make Announcement
       "1",                // Browse Announcements
-      "stock-issue",      // Allocate or Reject Stock
-      "stock-view",       // Stock List
-      "feedback-resolve", // Resolve Feedback
+      "resources",        // Resources
       "timetable-create", // Manage Timetable
       "timetable-view",   // View Timetable
+      "stock-issue",      // Issue Stock Item
+      "stock-view",       // Stock List
+      "feedback-resolve", // Resolve Feedback
       "profile-edit",     // Profile & Department Details
-      "resources",        // Resources
     ];
   } else if (isHOD) {
-    // HOD: make announcements, browse announcements, approve/reject stock, stock list,
-    // resolve feedback, profile edit, approve profile changes, resources
+    // HOD: make announcements, browse announcements, resources, resolve feedback, stock management, profile management
     baseActionTabs = [
       "0",                     // Make Announcement
       "1",                     // Browse Announcements
+      "resources",             // Resources
+      "feedback-resolve",      // Resolve Feedback
       "stock-decision",        // Approve or Reject Stock Request
       "stock-view",            // Stock List
-      "feedback-resolve",      // Resolve Feedback
       "profile-edit",          // User Profile & Department Details
       "profile-change-review", // Approve Official Department Changes
-      "resources",             // Resources
     ];
   } else if (isAssistantProfessor) {
-    // Faculty: make announcements, browse announcements, resources, request stock, stock list
+    // Faculty: make announcements, browse announcements, request stock, stock list, resources
     baseActionTabs = [
       "0",             // Make Announcement
       "1",             // Browse Announcements
-      "resources",     // Resources
       "stock-request", // Request Stock Item
       "stock-view",    // Stock List
+      "resources",     // Resources
     ];
   } else if (isStudent) {
-    // Student: browse announcements, student feedback, resources only
+    // Student: browse announcements, resources, student feedback, my feedback
     baseActionTabs = [
       "1",                // Browse Announcements
-      "feedback-student", // Student Feedback
       "resources",        // Resources
+      "feedback-student", // Submit Feedback
+      "my-feedback",      // My Feedback (View Status & Resolution)
     ];
   } else {
     // Fallback: minimal tabs (browse announcements, feedback, resources)
@@ -150,6 +150,13 @@ export default function LandingPage() {
   const actionTabs = baseActionTabs;
   const visibleActionTabs = actionTabs;
   
+  // Set initial tab based on role and ensure it's the first tab in baseActionTabs
+  useEffect(() => {
+    if (baseActionTabs.length > 0 && !activeTab) {
+      setActiveTab(baseActionTabs[0]);
+    }
+  }, [baseActionTabs, activeTab]);
+
   // Debug logs - more visible
   useEffect(() => {
     console.log("=== DEPARTMENT ROLE DEBUG ===");
@@ -229,40 +236,37 @@ export default function LandingPage() {
         setServerRoleTokens(Array.isArray(roleTokens) ? roleTokens : []);
         setBranch(resolvedDepartment);
         const deptTab = departments.find((d) => d.code === resolvedDepartment)?.id;
-        // Don't automatically set department tab, let role-based logic set the first tab
-        // setActiveTab(deptTab || "3");
         setActionTabStart(0);
         setError(null);
       };
 
       try {
-        const profileResponse = await axios.get(`${host}/api/profile/`, { headers });
-        const { designation, roleTokens, department } = parseDepartmentContext(profileResponse.data);
-        applyDepartmentContext(designation, roleTokens, department);
-      } catch (err) {
-        try {
-          const eisResponse = await axios.get(`${host}/eis/api/profile/`, { headers });
-          const { designation, roleTokens, department } = parseDepartmentContext(eisResponse.data);
-          applyDepartmentContext(designation, roleTokens, department);
-        } catch (eisErr) {
-          try {
-            const dashboardResponse = await axios.get(`${host}/api/dashboard/`, {
-              headers,
-            });
-            const designation =
-              dashboardResponse.data?.designation_info?.[0] ||
-              dashboardResponse.data?.desgination_info?.[0] ||
-              null;
-            const roleTokens =
-              dashboardResponse.data?.designation_info ||
-              dashboardResponse.data?.desgination_info ||
-              [];
-            applyDepartmentContext(designation, roleTokens, "CSE");
-          } catch (dashboardErr) {
-            console.error("Error fetching user department:", dashboardErr);
-            setError("Failed to fetch department data");
+        // Make all 3 API calls in PARALLEL instead of sequential
+        const responses = await Promise.allSettled([
+          axios.get(`${host}/api/profile/`, { headers }),
+          axios.get(`${host}/eis/api/profile/`, { headers }),
+          axios.get(`${host}/api/dashboard/`, { headers }),
+        ]);
+
+        // Process responses in order of preference
+        for (const response of responses) {
+          if (response.status === "fulfilled") {
+            try {
+              const { designation, roleTokens, department } = parseDepartmentContext(response.value.data);
+              applyDepartmentContext(designation, roleTokens, department);
+              return; // Exit on first successful response
+            } catch (parseErr) {
+              console.warn("Error parsing response:", parseErr);
+              continue; // Try next response
+            }
           }
         }
+
+        // If all parallel requests failed, fallback
+        setError("Failed to fetch department data");
+      } catch (err) {
+        console.error("Error in parallel fetch:", err);
+        setError("Failed to fetch department data");
       } finally {
         setLoading(false);
       }
@@ -319,6 +323,7 @@ export default function LandingPage() {
         <MakeAnnouncement />
       )}
       {activeTab === "1" && <BrowseAnnouncements />}
+      {activeTab === "my-feedback" && <MyFeedback />}
       {activeTab === "feedback-student" && <FeedbackForm branch={branch} mode="student" />}
       {activeTab === "feedback-resolve" && <FeedbackForm branch={branch} mode="resolve" />}
       {activeTab === "stock-view" && <StockViewList />}
@@ -362,6 +367,7 @@ export default function LandingPage() {
     const tabTitleMap = {
       "0": "Make Announcement",
       "1": "Browse Announcements",
+      "my-feedback": "My Feedback",
       "feedback-student": "Submit Feedback",
       "feedback-resolve": "Resolve Feedback",
       "stock-view": "View Stock Requests",
@@ -387,15 +393,6 @@ export default function LandingPage() {
     return "Department";
   };
 
-  // Get role badge info for display
-  const getRoleBadgeInfo = () => {
-    if (isHOD) return { label: "Head of Department", color: "red", warning: false };
-    if (isDeptAdmin) return { label: "Department Admin", color: "blue", warning: false };
-    if (isAssistantProfessor) return { label: "Faculty", color: "cyan", warning: false };
-    if (isStudent) return { label: "Student", color: "grape", warning: false };
-    return { label: "Guest - Limited Access", color: "gray", warning: true };
-  };
-
   const breadcrumbItems = [
     <Text key="home" className={dashboardClasses.fusionText} fw={400}>
       Home
@@ -413,15 +410,6 @@ export default function LandingPage() {
       <Box mb="lg">
         <Group justify="space-between" align="center">
           <CustomBreadcrumbs breadCrumbs={breadcrumbItems} />
-          <Badge 
-            size="lg" 
-            color={getRoleBadgeInfo().color}
-            variant={getRoleBadgeInfo().warning ? "outline" : "filled"}
-            title={`Current Role: ${effectiveRole || 'Not Detected'}${getRoleBadgeInfo().warning ? ' - Please contact admin if this is incorrect' : ''}`}
-          >
-            {getRoleBadgeInfo().label}
-            {getRoleBadgeInfo().warning && " ⚠️"}
-          </Badge>
         </Group>
       </Box>
 
@@ -525,14 +513,30 @@ export default function LandingPage() {
                         Browse Announcements
                       </Tabs.Tab>
                     )}
-                    
-                    {/* DIVIDER */}
-                    {(visibleActionTabs.includes("0") || visibleActionTabs.includes("1")) && 
-                     (visibleActionTabs.includes("feedback-student") || visibleActionTabs.includes("feedback-resolve") || visibleActionTabs.includes("stock-view")) && (
-                      <Box style={{ width: 1, height: 24, background: "#ddd", margin: "0 4px" }} />
-                    )}
 
                     {/* FEEDBACK GROUP */}
+                    {visibleActionTabs.includes("my-feedback") && (
+                      <Tabs.Tab
+                        value="my-feedback"
+                        className={
+                          activeTab === "my-feedback"
+                            ? dashboardClasses.fusionActiveRecentTab
+                            : ""
+                        }
+                        style={{ 
+                          fontWeight: 400, 
+                          fontSize: "0.95rem", 
+                          marginRight: 8,
+                          borderBottomColor: activeTab === "my-feedback" ? "#1971c2" : "transparent",
+                          borderBottomWidth: "3px",
+                          borderBottomStyle: "solid"
+                        }}
+                        data-active={activeTab === "my-feedback"}
+                      >
+                        My Feedback
+                      </Tabs.Tab>
+                    )}
+
                     {visibleActionTabs.includes("feedback-student") && (
                       <Tabs.Tab
                         value="feedback-student"
@@ -574,12 +578,6 @@ export default function LandingPage() {
                       >
                         {feedbackLabel}
                       </Tabs.Tab>
-                    )}
-
-                    {/* DIVIDER */}
-                    {(visibleActionTabs.includes("feedback-student") || visibleActionTabs.includes("feedback-resolve")) && 
-                     visibleActionTabs.includes("stock-view") && (
-                      <Box style={{ width: 1, height: 24, background: "#ddd", margin: "0 4px" }} />
                     )}
 
                     {/* STOCK GROUP */}
@@ -626,11 +624,6 @@ export default function LandingPage() {
                       </Tabs.Tab>
                     )}
                     
-                    {/* DIVIDER BEFORE STOCK-DECISION */}
-                    {(visibleActionTabs.includes("stock-request") || visibleActionTabs.includes("stock-view")) && visibleActionTabs.includes("stock-decision") && (
-                      <Box style={{ width: 1, height: 24, background: "#ddd", margin: "0 4px" }} />
-                    )}
-                    
                     {visibleActionTabs.includes("stock-decision") && (
                       <Tabs.Tab
                         value="stock-decision"
@@ -673,11 +666,6 @@ export default function LandingPage() {
                         Allocate or Reject Stock Request
                       </Tabs.Tab>
                     )}
-
-                    {/* DIVIDER */}
-                    {visibleActionTabs.includes("stock-issue") && visibleActionTabs.includes("timetable-create") && (
-                      <Box style={{ width: 1, height: 24, background: "#ddd", margin: "0 4px" }} />
-                    )}
                     {visibleActionTabs.includes("timetable-create") && (
                       <Tabs.Tab
                         value="timetable-create"
@@ -719,11 +707,6 @@ export default function LandingPage() {
                       >
                         View Timetable
                       </Tabs.Tab>
-                    )}
-
-                    {/* DIVIDER */}
-                    {visibleActionTabs.includes("timetable-view") && visibleActionTabs.includes("profile-edit") && (
-                      <Box style={{ width: 1, height: 24, background: "#ddd", margin: "0 4px" }} />
                     )}
 
                     {/* PROFILE GROUP */}
@@ -770,10 +753,6 @@ export default function LandingPage() {
                       </Tabs.Tab>
                     )}
 
-                    {/* DIVIDER */}
-                    {(visibleActionTabs.includes("profile-edit") || visibleActionTabs.includes("profile-change-review")) && visibleActionTabs.includes("resources") && (
-                      <Box style={{ width: 1, height: 24, background: "#ddd", margin: "0 4px" }} />
-                    )}
                     {visibleActionTabs.includes("resources") && (
                       <Tabs.Tab
                         value="resources"

@@ -11,6 +11,7 @@ import {
   Text,
   Textarea,
   TextInput,
+  Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { host } from "../../../routes/globalRoutes";
@@ -29,6 +30,7 @@ const departmentOptions = [
 function ProfileDepartmentEditor() {
   const [targetType, setTargetType] = useState("student");
   const [targetId, setTargetId] = useState("");
+  const [userId, setUserId] = useState(null); // Store numeric user ID
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -75,6 +77,7 @@ function ProfileDepartmentEditor() {
         { headers: { Authorization: `Token ${token}` } },
       );
       const data = response.data || {};
+      setUserId(data.id || null); // Store numeric user ID
       setProfileData({
         aboutMe: data.about_me || "",
         dateOfBirth: data.date_of_birth || "",
@@ -116,6 +119,14 @@ function ProfileDepartmentEditor() {
       return;
     }
 
+    if (!userId) {
+      notifications.show({
+        message: "Please fetch a profile first before submitting changes.",
+        color: "red",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
       const changes = {
@@ -139,7 +150,7 @@ function ProfileDepartmentEditor() {
         `${host}/dep/api/profile-change-requests/`,
         {
           target_type: targetType,
-          target_id: targetId.trim(),
+          target_id: String(userId), // Use numeric user ID instead of identifier
           changes,
         },
         {
@@ -174,9 +185,9 @@ function ProfileDepartmentEditor() {
     <Paper className={classes.tabPanelPaper} p="lg" radius="md" withBorder>
       <Stack gap="md">
         <div>
-          <Text fw={500} size="lg" className={classes.sectionTitle}>
+          <Title order={3} fw={300} c="blue.7">
             Profile & Department Details
-          </Text>
+          </Title>
           <Text size="sm" c="dimmed" mt={4}>
             Choose student or faculty, fetch details, edit and submit official changes for approval.
           </Text>
@@ -192,6 +203,7 @@ function ProfileDepartmentEditor() {
               const nextType = value || "student";
               setTargetType(nextType);
               setTargetId("");
+              setUserId(null);
               setProfileFound(false);
               setError(null);
             }}

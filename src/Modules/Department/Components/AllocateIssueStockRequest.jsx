@@ -45,7 +45,9 @@ export default function AllocateIssueStockRequest() {
           Authorization: `Token ${authToken}`,
         },
       });
-      const all = Array.isArray(response.data) ? response.data : [];
+      const all = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data.results || []);
       setRequests(all.filter((item) => item.status === "APPROVED"));
     } catch (error) {
       setErrorMessage(error.response?.data?.detail || "Unable to load requests.");
@@ -112,7 +114,7 @@ export default function AllocateIssueStockRequest() {
 
   return (
     <Container size="md" py="xl">
-      <Title order={2} mb="md" fw={400}>
+      <Title order={2} mb="md" fw={300} c="blue.7" align="center">
         Allocate and Issue Stock Request
       </Title>
 

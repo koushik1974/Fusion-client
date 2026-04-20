@@ -10,6 +10,7 @@ import {
   useMantineReactTable,
 } from "mantine-react-table";
 import "mantine-react-table/styles.css";
+import "./SpecialTable.css";
 
 function SpecialTable({ title, columns, data, rowOptions }) {
   const table = useMantineReactTable({
@@ -33,27 +34,27 @@ function SpecialTable({ title, columns, data, rowOptions }) {
     <div>
       <Stack>
         <Divider />
-        <Title order={4}>{title ?? "My Special Table"}</Title>
+        <Title order={4} fw={300} c="blue.7">{title ?? "My Special Table"}</Title>
         <Flex justify="space-between" align="center">
           <FilterTextInput table={table} />
           <TablePagination table={table} />
         </Flex>
         <Table
+          className="special-table"
           captionSide="top"
           fz="md"
           highlightOnHover
-          horizontalSpacing="xl"
-          striped
-          verticalSpacing="xs"
+          horizontalSpacing="md"
+          verticalSpacing="sm"
           withTableBorder
           withColumnBorders
           m="0"
         >
-          <Table.Thead>
+          <Table.Thead className="table-head">
             {table.getHeaderGroups().map((headerGroup) => (
-              <Table.Tr key={headerGroup.id}>
+              <Table.Tr key={headerGroup.id} className="header-row">
                 {headerGroup.headers.map((header) => (
-                  <Table.Th key={header.id}>
+                  <Table.Th key={header.id} className="header-cell">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -66,11 +67,11 @@ function SpecialTable({ title, columns, data, rowOptions }) {
               </Table.Tr>
             ))}
           </Table.Thead>
-          <Table.Tbody>
+          <Table.Tbody className="table-body">
             {table.getRowModel().rows.map((row) => (
-              <Table.Tr key={row.id}>
+              <Table.Tr key={row.id} className="body-row">
                 {row.getVisibleCells().map((cell) => (
-                  <Table.Td key={cell.id}>
+                  <Table.Td key={cell.id} className="body-cell">
                     {flexRender(
                       cell.column.columnDef.cell ?? cell.column.columnDef.Cell,
                       cell.getContext(),
